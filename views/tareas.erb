@@ -1,7 +1,11 @@
 <section>
   <h2>Tareas de <%= @usuario.nombre %></h2>
-  <% @tareas.each do |tarea| %>
-    <p><%= tarea %></p>
+  <% if @tareas && @tareas.any? %>
+    <% @tareas.each do |tarea| %>
+      <p><%= tarea %></p>
+    <% end %>
+  <% else %>
+    <p>No hay tareas registradas.</p>
   <% end %>
   <a href="/">Agregar otra tarea</a>
 </section>

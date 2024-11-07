@@ -3,6 +3,7 @@ require 'sinatra/reloader' if development?
 
 # Configura la carpeta 'public' para archivos estáticos (CSS, imágenes, etc.)
 set :public_folder, 'public'
+enable :sessions  # Habilita sesiones para almacenar datos específicos de cada usuario
 
 # Clase Tarea
 class Tarea
@@ -57,22 +58,39 @@ class Usuario
   end
 end
 
-# Ejemplo de usuario y tareas
-usuario = Usuario.new("Kev")
-tarea1 = Tarea.new("Responder correos", "Alta", "2024-11-06")
-tarea2 = TareaRecurrente.new("Estudiar programación", "Media", "2024-11-06", "Diaria")
-
-usuario.agregar_tarea(tarea1)
-usuario.agregar_tarea(tarea2)
-
 # Ruta principal para agregar tarea
 get '/' do
   erb :index
 end
 
+# Ruta para procesar la creación de una nueva tarea
+post '/agregar_tarea' do
+  nombre = params[:nombre]
+  prioridad = params[:prioridad]
+  fecha = params[:fecha]
+  tipo = params[:tipo]
+  frecuencia = params[:frecuencia]
+
+  # Inicializa la sesión de usuario y sus tareas si no existen
+  session[:usuario] ||= Usuario.new("Kev")
+
+  # Crear tarea según el tipo
+  tarea = if tipo == 'recurrente'
+            TareaRecurrente.new(nombre, prioridad, fecha, frecuencia)
+          else
+            Tarea.new(nombre, prioridad, fecha)
+          end
+
+  # Agregar la tarea al usuario en sesión
+  session[:usuario].agregar_tarea(tarea)
+
+  # Redirigir al listado de tareas
+  redirect '/tareas'
+end
+
 # Ruta para mostrar las tareas
 get '/tareas' do
-  @usuario = usuario
-  @tareas = @usuario.mostrar_tareas
+  @usuario = session[:usuario]
+  @tareas = @usuario.mostrar_tareas if @usuario
   erb :tareas
 end

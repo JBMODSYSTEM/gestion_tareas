@@ -1,0 +1,28 @@
+<section>
+  <h2>Editar Tarea</h2>
+  <form action="/tareas/<%= @id %>/editar" method="post">
+    <label for="nombre">Nombre de la tarea:</label>
+    <input type="text" id="nombre" name="nombre" value="<%= @tarea.nombre %>" required>
+
+    <label for="prioridad">Prioridad:</label>
+    <select id="prioridad" name="prioridad">
+      <option value="Alta" <%= "selected" if @tarea.prioridad == "Alta" %>>Alta</option>
+      <option value="Media" <%= "selected" if @tarea.prioridad == "Media" %>>Media</option>
+      <option value="Baja" <%= "selected" if @tarea.prioridad == "Baja" %>>Baja</option>
+    </select>
+
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha" value="<%= @tarea.fecha %>" required>
+
+    <label for="tipo">Tipo de tarea:</label>
+    <select id="tipo" name="tipo">
+      <option value="normal" <%= "selected" if @tarea.is_a?(Tarea) %>>Normal</option>
+      <option value="recurrente" <%= "selected" if @tarea.is_a?(TareaRecurrente) %>>Recurrente</option>
+    </select>
+
+    <label for="frecuencia">Frecuencia (si es recurrente):</label>
+    <input type="text" id="frecuencia" name="frecuencia" value="<%= @tarea.is_a?(TareaRecurrente) ? @tarea.frecuencia : '' %>">
+
+    <button type="submit">Guardar Cambios</button>
+  </form>
+</section>
