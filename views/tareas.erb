@@ -1,11 +1,27 @@
 <section>
-  <h2>Tareas de <%= @usuario.nombre %></h2>
-  <% if @tareas && @tareas.any? %>
-    <% @tareas.each do |tarea| %>
-      <p><%= tarea %></p>
+  <% if @usuario && @usuario.nombre %>
+    <h2>Tareas de <%= @usuario.nombre %></h2>
+    <% if @tareas && @tareas.any? %>
+      <% @usuario.tareas.each_with_index do |tarea, index| %>
+        <div class="tarea">
+          <p><%= tarea.mostrar_detalle %></p>
+          <div class="botones-tarea">
+            <form action="/tareas/<%= index %>/editar" method="get" style="display:inline;">
+              <button type="submit" class="btn-editar">Editar</button>
+            </form>
+            <form action="/tareas/<%= index %>/eliminar" method="post" style="display:inline;">
+              <button type="submit" class="btn-eliminar">Eliminar</button>
+            </form>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <p>No hay tareas registradas.</p>
     <% end %>
+    <div class="contenedor-boton">
+         <a href="/" class="btn-agregar">Agregar otra tarea</a>
+    </div>
   <% else %>
-    <p>No hay tareas registradas.</p>
+    <p>Usuario no registrado. <a href="/">Ir al inicio</a></p>
   <% end %>
-  <a href="/">Agregar otra tarea</a>
 </section>
