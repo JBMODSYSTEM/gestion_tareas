@@ -1,0 +1,28 @@
+<section>
+  <h2>Bienvenido a la Gestión de Tareas</h2>
+  <form action="/agregar_tarea" method="post">
+    <label for="nombre">Nombre de la tarea:</label>
+    <input type="text" id="nombre" name="nombre" required>
+
+    <label for="prioridad">Prioridad:</label>
+    <select id="prioridad" name="prioridad">
+      <option value="Alta">Alta</option>
+      <option value="Media">Media</option>
+      <option value="Baja">Baja</option>
+    </select>
+
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha" required>
+
+    <label for="tipo">Tipo de tarea:</label>
+    <select id="tipo" name="tipo">
+      <option value="normal">Normal</option>
+      <option value="recurrente">Recurrente</option>
+    </select>
+
+    <label for="frecuencia">Frecuencia (si es recurrente):</label>
+    <input type="text" id="frecuencia" name="frecuencia">
+
+    <button type="submit">Agregar Tarea</button>
+  </form>
+</section>

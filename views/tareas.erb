@@ -1,0 +1,7 @@
+<section>
+  <h2>Tareas de <%= @usuario.nombre %></h2>
+  <% @tareas.each do |tarea| %>
+    <p><%= tarea %></p>
+  <% end %>
+  <a href="/">Agregar otra tarea</a>
+</section>

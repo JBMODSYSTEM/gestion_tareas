@@ -1,0 +1,120 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  header {
+    background-color: #4CAF50; /* Verde principal */
+    color: #fff;
+    padding: 1em;
+    text-align: center;
+  }
+  
+  header h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  
+  nav {
+    margin-top: 1em;
+  }
+  
+  nav a {
+    color: #ffffff;
+    margin: 0 10px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  nav a:hover {
+    color: #c8e6c9; /* Verde claro */
+  }
+  
+  main {
+    padding: 2em;
+    max-width: 800px;
+    margin: auto;
+    background-color: #ffffff; /* Blanco */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  section h2 {
+    color: #388e3c; /* Verde oscuro */
+    margin-bottom: 1em;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  form label {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #555; /* Gris medio */
+  }
+  
+  form input[type="text"],
+  form input[type="date"],
+  form select {
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  form input[type="text"]:focus,
+  form input[type="date"]:focus,
+  form select:focus {
+    outline: none;
+    border-color: #4CAF50; /* Verde */
+  }
+  
+  form button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #4CAF50; /* Verde principal */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+  }
+  
+  form button:hover {
+    background-color: #388e3c; /* Verde oscuro */
+  }
+  
+  section p {
+    background-color: #e8f5e9; /* Verde muy claro */
+    padding: 10px;
+    border-left: 5px solid #4CAF50; /* Verde principal */
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  
+  footer {
+    background-color: #4CAF50; /* Verde principal */
+    color: #fff;
+    text-align: center;
+    padding: 1em;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    font-size: 0.9em;
+  }
+  
+  footer p {
+    margin: 0;
+  }
+  
