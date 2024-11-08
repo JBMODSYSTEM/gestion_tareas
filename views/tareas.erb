@@ -1,27 +1,38 @@
 <section>
   <% if @usuario && @usuario.nombre %>
+    <!-- Verifica si hay un usuario y si tiene un nombre -->
     <h2>Tareas de <%= @usuario.nombre %></h2>
     <% if @tareas && @tareas.any? %>
+      <!-- Verifica si hay tareas y si hay alguna tarea registrada -->
       <% @usuario.tareas.each do |tarea| %>
+        <!-- Itera sobre cada tarea del usuario -->
         <div class="tarea">
           <p><%= tarea.mostrar_detalle %></p>
           <div class="botones-tarea">
+            <form action="/tareas/<%= tarea.id %>/completar" method="post" style="display:inline;">
+              <!-- Formulario para completar o desmarcar la tarea -->
+              <button type="submit" class="btn-completar"><%= tarea.completada ? "Desmarcar" : "Completar" %></button>
+            </form>
             <form action="/tareas/<%= tarea.id %>/editar" method="get" style="display:inline;">
+              <!-- Formulario para editar la tarea -->
               <button type="submit" class="btn-editar">Editar</button>
             </form>
             <form action="/tareas/<%= tarea.id %>/eliminar" method="post" style="display:inline;">
+              <!-- Formulario para eliminar la tarea -->
               <button type="submit" class="btn-eliminar">Eliminar</button>
             </form>
           </div>
         </div>
       <% end %>
     <% else %>
+      <!-- Mensaje si no hay tareas registradas -->
       <p>No hay tareas registradas.</p>
     <% end %>
     <div class="contenedor-boton">
       <a href="/" class="btn-agregar">Agregar otra tarea</a>
     </div>
   <% else %>
+    <!-- Mensaje si el usuario no está registrado -->
     <p>Usuario no registrado. <a href="/">Ir al inicio</a></p>
   <% end %>
 </section>

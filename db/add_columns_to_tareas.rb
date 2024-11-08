@@ -1,6 +1,7 @@
 # db/add_columns_to_tareas.rb
 require 'sqlite3'
 
+# Conectar a la base de datos
 DB = SQLite3::Database.new("db/tareas.db")
 
 # Agregar columnas a la tabla tareas

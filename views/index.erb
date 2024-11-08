@@ -28,12 +28,12 @@
 </section>
 
 <script>
+  // Función para habilitar o deshabilitar el campo "Frecuencia" según el tipo de tarea
   function toggleFrecuencia() {
     var tipo = document.getElementById('tipo').value;
     var frecuencia = document.getElementById('frecuencia');
     var submitBtn = document.getElementById('submitBtn');
 
-    // Habilita o deshabilita el campo "Frecuencia" según el tipo de tarea
     frecuencia.disabled = (tipo === 'normal');
     frecuencia.required = (tipo === 'recurrente');
     
@@ -45,6 +45,7 @@
     checkSubmitButton();
   }
 
+  // Función para verificar el estado del botón de envío
   function checkSubmitButton() {
     var tipo = document.getElementById('tipo').value;
     var frecuencia = document.getElementById('frecuencia').value.trim();

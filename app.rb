@@ -91,14 +91,14 @@ end
 # Ruta principal para agregar tarea
 get '/' do
   # Inicializa la sesión si no existe
-  session[:usuario] ||= Usuario.new("Kev")
+  session[:usuario] ||= Usuario.new("José Beltrán")
   erb :index
 end
 
 # Ruta para procesar la creación de una nueva tarea
 post '/agregar_tarea' do
   # Asegurarse de que session[:usuario] esté inicializada
-  session[:usuario] ||= Usuario.new("Kev")
+  session[:usuario] ||= Usuario.new("José Beltrán")
   
   nombre = params[:nombre]
   prioridad = params[:prioridad]
@@ -171,5 +171,20 @@ post '/tareas/:id/editar' do
   frecuencia = params[:frecuencia]
 
   @usuario.editar_tarea(id, nombre, prioridad, fecha, tipo, frecuencia)
+  redirect '/tareas'
+end
+
+# Ruta para marcar una tarea como completada o no completada
+post '/tareas/:id/completar' do
+  redirect '/' unless session[:usuario]
+
+  @usuario = session[:usuario]
+  id = params[:id].to_i
+  tarea = @usuario.mostrar_tareas.find { |t| t.id == id }
+  halt(404, 'Tarea no encontrada') unless tarea
+
+  tarea.completada = !tarea.completada
+  DB.execute("UPDATE tareas SET completada = ? WHERE id = ?", [tarea.completada ? 1 : 0, id])
+
   redirect '/tareas'
 end
