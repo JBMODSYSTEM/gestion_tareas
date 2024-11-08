@@ -2,14 +2,14 @@
   <% if @usuario && @usuario.nombre %>
     <h2>Tareas de <%= @usuario.nombre %></h2>
     <% if @tareas && @tareas.any? %>
-      <% @usuario.tareas.each_with_index do |tarea, index| %>
+      <% @usuario.tareas.each do |tarea| %>
         <div class="tarea">
           <p><%= tarea.mostrar_detalle %></p>
           <div class="botones-tarea">
-            <form action="/tareas/<%= index %>/editar" method="get" style="display:inline;">
+            <form action="/tareas/<%= tarea.id %>/editar" method="get" style="display:inline;">
               <button type="submit" class="btn-editar">Editar</button>
             </form>
-            <form action="/tareas/<%= index %>/eliminar" method="post" style="display:inline;">
+            <form action="/tareas/<%= tarea.id %>/eliminar" method="post" style="display:inline;">
               <button type="submit" class="btn-eliminar">Eliminar</button>
             </form>
           </div>
@@ -19,7 +19,7 @@
       <p>No hay tareas registradas.</p>
     <% end %>
     <div class="contenedor-boton">
-         <a href="/" class="btn-agregar">Agregar otra tarea</a>
+      <a href="/" class="btn-agregar">Agregar otra tarea</a>
     </div>
   <% else %>
     <p>Usuario no registrado. <a href="/">Ir al inicio</a></p>

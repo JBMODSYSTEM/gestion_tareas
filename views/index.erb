@@ -12,17 +12,48 @@
     </select>
 
     <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" required>
+    <input type="date" id="fecha" name="fecha" class="styled-date-input" required>
 
     <label for="tipo">Tipo de tarea:</label>
-    <select id="tipo" name="tipo">
+    <select id="tipo" name="tipo" onchange="toggleFrecuencia()">
       <option value="normal">Normal</option>
       <option value="recurrente">Recurrente</option>
     </select>
 
     <label for="frecuencia">Frecuencia (si es recurrente):</label>
-    <input type="text" id="frecuencia" name="frecuencia">
+    <input type="text" id="frecuencia" name="frecuencia" disabled required>
 
-    <button type="submit">Agregar Tarea</button>
+    <button type="submit" id="submitBtn">Agregar Tarea</button>
   </form>
 </section>
+
+<script>
+  function toggleFrecuencia() {
+    var tipo = document.getElementById('tipo').value;
+    var frecuencia = document.getElementById('frecuencia');
+    var submitBtn = document.getElementById('submitBtn');
+
+    // Habilita o deshabilita el campo "Frecuencia" según el tipo de tarea
+    frecuencia.disabled = (tipo === 'normal');
+    frecuencia.required = (tipo === 'recurrente');
+    
+    if (tipo === 'normal') {
+      frecuencia.value = ''; // Limpia el campo si el tipo es normal
+    }
+    
+    // Actualiza el estado del botón de envío
+    checkSubmitButton();
+  }
+
+  function checkSubmitButton() {
+    var tipo = document.getElementById('tipo').value;
+    var frecuencia = document.getElementById('frecuencia').value.trim();
+    var submitBtn = document.getElementById('submitBtn');
+
+    // Habilita el botón solo si es tipo normal o si la frecuencia está completa
+    submitBtn.disabled = (tipo === 'recurrente' && frecuencia === '');
+  }
+
+  // Evento de escucha para el campo frecuencia
+  document.getElementById('frecuencia').addEventListener('input', checkSubmitButton);
+</script>

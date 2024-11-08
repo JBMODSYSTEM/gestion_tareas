@@ -12,17 +12,38 @@
     </select>
 
     <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" value="<%= @tarea.fecha %>" required>
+    <input type="date" id="fecha" name="fecha" value="<%= @tarea.fecha %>" class="styled-date-input" required>
 
     <label for="tipo">Tipo de tarea:</label>
-    <select id="tipo" name="tipo">
+    <select id="tipo" name="tipo" onchange="toggleFrecuencia()">
       <option value="normal" <%= "selected" if @tarea.is_a?(Tarea) %>>Normal</option>
       <option value="recurrente" <%= "selected" if @tarea.is_a?(TareaRecurrente) %>>Recurrente</option>
     </select>
 
     <label for="frecuencia">Frecuencia (si es recurrente):</label>
-    <input type="text" id="frecuencia" name="frecuencia" value="<%= @tarea.is_a?(TareaRecurrente) ? @tarea.frecuencia : '' %>">
+    <input type="text" id="frecuencia" name="frecuencia" value="<%= @tarea.is_a?(TareaRecurrente) ? @tarea.frecuencia : '' %>" <%= "disabled" unless @tarea.is_a?(TareaRecurrente) %>>
 
-    <button type="submit">Guardar Cambios</button>
+    <button type="submit" id="submitBtn">Guardar Cambios</button>
   </form>
 </section>
+
+<script>
+  function toggleFrecuencia() {
+    var tipo = document.getElementById('tipo').value;
+    var frecuencia = document.getElementById('frecuencia');
+    
+    if (tipo === 'recurrente') {
+      frecuencia.disabled = false;
+      frecuencia.required = true;
+    } else {
+      frecuencia.disabled = true;
+      frecuencia.required = false;
+      frecuencia.value = ''; // Limpiar el valor si está deshabilitado
+    }
+  }
+
+  // Ejecutar la función al cargar la página para aplicar el estado inicial
+  document.addEventListener('DOMContentLoaded', function() {
+    toggleFrecuencia();
+  });
+</script>

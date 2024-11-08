@@ -1,15 +1,20 @@
 require 'sinatra'
 require 'sinatra/reloader' if development?
 
+require 'sqlite3'
+DB = SQLite3::Database.new 'db/tareas.db'
+DB.results_as_hash = true
+
 # Configura la carpeta 'public' para archivos estáticos (CSS, imágenes, etc.)
 set :public_folder, 'public'
 enable :sessions  # Habilita sesiones para almacenar datos específicos de cada usuario
 
 # Clase Tarea
 class Tarea
-  attr_accessor :nombre, :prioridad, :fecha, :completada
+  attr_accessor :id, :nombre, :prioridad, :fecha, :completada
 
-  def initialize(nombre, prioridad, fecha)
+  def initialize(id, nombre, prioridad, fecha)
+    @id = id
     @nombre = nombre
     @prioridad = prioridad
     @fecha = fecha
@@ -29,8 +34,8 @@ end
 class TareaRecurrente < Tarea
   attr_accessor :frecuencia
 
-  def initialize(nombre, prioridad, fecha, frecuencia)
-    super(nombre, prioridad, fecha)
+  def initialize(id, nombre, prioridad, fecha, frecuencia)
+    super(id, nombre, prioridad, fecha)
     @frecuencia = frecuencia
   end
 
@@ -49,25 +54,37 @@ class Usuario
   end
 
   def agregar_tarea(tarea)
-    @tareas << tarea
+    DB.execute("INSERT INTO tareas (nombre, prioridad, fecha, completada, frecuencia)
+                VALUES (?, ?, ?, ?, ?)",
+               [tarea.nombre, tarea.prioridad, tarea.fecha, tarea.completada ? 1 : 0, tarea.is_a?(TareaRecurrente) ? tarea.frecuencia : nil])
   end
 
   def editar_tarea(id, nombre, prioridad, fecha, tipo, frecuencia = nil)
-    tarea = @tareas[id.to_i]
-    tarea.nombre = nombre
-    tarea.prioridad = prioridad
-    tarea.fecha = fecha
-    if tipo == "recurrente" && tarea.is_a?(TareaRecurrente)
-      tarea.frecuencia = frecuencia
-    elsif tipo == "normal" && tarea.is_a?(TareaRecurrente)
-      @tareas[id.to_i] = Tarea.new(nombre, prioridad, fecha)
-    elsif tipo == "recurrente" && tarea.is_a?(Tarea)
-      @tareas[id.to_i] = TareaRecurrente.new(nombre, prioridad, fecha, frecuencia)
+    if tipo == "recurrente"
+      DB.execute("UPDATE tareas SET nombre = ?, prioridad = ?, fecha = ?, frecuencia = ? WHERE id = ?",
+                 [nombre, prioridad, fecha, frecuencia, id])
+    else
+      DB.execute("UPDATE tareas SET nombre = ?, prioridad = ?, fecha = ?, frecuencia = NULL WHERE id = ?",
+                 [nombre, prioridad, fecha, id])
     end
   end
 
   def mostrar_tareas
-    @tareas.map(&:mostrar_detalle)
+    @tareas = DB.execute("SELECT * FROM tareas").map do |row|
+      if row["frecuencia"]
+        TareaRecurrente.new(row["id"], row["nombre"], row["prioridad"], row["fecha"], row["frecuencia"]).tap do |t|
+          t.completada = row["completada"] == 1
+        end
+      else
+        Tarea.new(row["id"], row["nombre"], row["prioridad"], row["fecha"]).tap do |t|
+          t.completada = row["completada"] == 1
+        end
+      end
+    end
+  end
+
+  def eliminar_tarea(id)
+    DB.execute("DELETE FROM tareas WHERE id = ?", id)
   end
 end
 
@@ -89,10 +106,15 @@ post '/agregar_tarea' do
   tipo = params[:tipo]
   frecuencia = params[:frecuencia]
 
+  if tipo == 'recurrente' && frecuencia.empty?
+    @error = 'La frecuencia es requerida para tareas recurrentes'
+    return erb :index
+  end
+
   tarea = if tipo == 'recurrente'
-            TareaRecurrente.new(nombre, prioridad, fecha, frecuencia)
+            TareaRecurrente.new(nil, nombre, prioridad, fecha, frecuencia)
           else
-            Tarea.new(nombre, prioridad, fecha)
+            Tarea.new(nil, nombre, prioridad, fecha)
           end
 
   session[:usuario].agregar_tarea(tarea)
@@ -116,19 +138,24 @@ get '/tareas/:id/editar' do
 
   @usuario = session[:usuario]
   @id = params[:id].to_i
-  @tarea = @usuario.tareas[@id]
+  @tarea = @usuario.mostrar_tareas.find { |t| t.id == @id }
+
+  halt(404, 'Tarea no encontrada') unless @tarea
+
   erb :editar_tarea
 end
 
 # Ruta para eliminar una tarea
 post '/tareas/:id/eliminar' do
-    redirect '/' unless session[:usuario]
-  
-    @usuario = session[:usuario]
-    id = params[:id].to_i
-    @usuario.tareas.delete_at(id)  # Elimina la tarea de la lista
-    redirect '/tareas'
-  end
+  redirect '/' unless session[:usuario]
+
+  @usuario = session[:usuario]
+  id = params[:id].to_i
+  halt(404, 'Tarea no encontrada') unless @usuario.mostrar_tareas.any? { |t| t.id == id }
+
+  @usuario.eliminar_tarea(id)  # Elimina la tarea de la base de datos
+  redirect '/tareas'
+end
 
 # Ruta para procesar la edición de una tarea
 post '/tareas/:id/editar' do
@@ -136,7 +163,7 @@ post '/tareas/:id/editar' do
   redirect '/' unless session[:usuario]
 
   @usuario = session[:usuario]
-  id = params[:id]
+  id = params[:id].to_i
   nombre = params[:nombre]
   prioridad = params[:prioridad]
   fecha = params[:fecha]
